@@ -1,0 +1,15 @@
+function loadMaze(callback) {
+    fetch('laberinto.txt')
+        .then(response => response.text())
+        .then(data => {
+            console.log('Maze data:', data); // Depuración
+            const lines = data.split('\n');
+            lines.forEach(line => {
+                maze.push(line.split(''));
+            });
+            console.log('Maze array:', maze); // Depuración
+            callback();
+        })
+        .catch(error => console.error('Error loading the maze:', error));
+}
+
