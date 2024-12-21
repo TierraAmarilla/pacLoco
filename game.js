@@ -3,8 +3,8 @@ const mazeDisplay = document.getElementById('mazeDisplay');
 
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 1600, // Aumentar el tamaño del canvas
+    height: 1200, // Aumentar el tamaño del canvas
     parent: 'gameContainer',
     physics: {
         default: 'arcade',
@@ -22,7 +22,7 @@ const config = {
 
 const game = new Phaser.Game(config);
 
-let ball;
+let player;
 let maze = [];
 
 function preload() {
@@ -31,34 +31,59 @@ function preload() {
 
 function create() {
     const mazeText = this.cache.text.get('maze');
-    log.innerHTML += 'Maze data:<br>' + mazeText.replace(/\n/g, '<br>') + '<br>'; // Depuración
-    mazeDisplay.innerHTML = 'Maze data:<br>' + mazeText.replace(/\n/g, '<br>') + '<br>'; // Visualización del laberinto
-    const lines = mazeText.split('\n');
-    lines.forEach(line => {
-        maze.push(line.split(''));
-    });
-    log.innerHTML += 'Maze array:<br>' + JSON.stringify(maze) + '<br>'; // Depuración
+    if (mazeText) {
+        log.innerHTML += 'Maze data:<br>' + mazeText.replace(/\n/g, '<br>') + '<br>'; // Depuración
+        mazeDisplay.innerHTML = 'Maze data:<br>' + mazeText.replace(/\n/g, '<br>') + '<br>'; // Visualización del laberinto
+        const lines = mazeText.split('\n');
+        lines.forEach(line => {
+            maze.push(line.split(''));
+        });
+        log.innerHTML += 'Maze array:<br>' + JSON.stringify(maze) + '<br>'; // Depuración
 
-    // Dibujar el laberinto
-    for (let row = 0; row < maze.length; row++) {
-        for (let col = 0; col < maze[row].length; col++) {
-            if (maze[row][col] === '#') {
-                this.add.rectangle(col * 20, row * 20, 20, 20, 0x0000ff).setOrigin(0);
+        // Dibujar el laberinto
+        for (let row = 0; row < maze.length; row++) {
+            for (let col = 0; col < maze[row].length; col++) {
+                if (maze[row][col] === '#') {
+                    this.add.rectangle(col * 40, row * 40, 40, 40, 0x0000ff).setOrigin(0);
+                }
             }
         }
+
+        // Crear el jugador
+        player = this.add.rectangle(800, 600, 20, 20, 0xff0000);
+        this.physics.add.existing(player);
+        player.body.setBounce(0); // El jugador no rebota
+        player.body.setCollideWorldBounds(true); // El jugador colisiona con los límites del mundo
+
+        // Añadir velocidad inicial al jugador
+        player.body.setVelocity(100, 100);
+
+        // Configurar las teclas de movimiento
+        this.cursors = this.input.keyboard.createCursorKeys();
+    } else {
+        log.innerHTML += 'Error loading maze data.<br>';
     }
-
-    // Crear la pelota
-    ball = this.add.circle(400, 300, 10, 0xff0000);
-    this.physics.add.existing(ball);
-    ball.body.setBounce(1); // Hacer que la pelota rebote
-    ball.body.setCollideWorldBounds(true); // Hacer que la pelota colisione con los límites del mundo
-
-    // Añadir velocidad inicial a la pelota
-    ball.body.setVelocity(200, 200);
 }
 
 function update() {
-    // No necesitamos actualizar nada en este ejemplo
-}
+    const cursors = this.cursors;
+    const speed = 2;
 
+    if (cursors.left.isDown) {
+        player.x -= speed;
+    } else if (cursors.right.isDown) {
+        player.x += speed;
+    } else if (cursors.up.isDown) {
+        player.y -= speed;
+    } else if (cursors.down.isDown) {
+        player.y += speed;
+    }
+
+    // Verificar colisiones con las paredes
+    const tileX = Math.floor(player.x / 40);
+    const tileY = Math.floor(player.y / 40);
+    if (maze[tileY][tileX] === '#') {
+        player.x = Math.floor(player.x / 40) * 40;
+        player.y = Math.floor(player.y / 40) * 40;
+    }
+}
