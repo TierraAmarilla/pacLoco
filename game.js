@@ -44,13 +44,13 @@ function create() {
         for (let row = 0; row < maze.length; row++) {
             for (let col = 0; col < maze[row].length; col++) {
                 if (maze[row][col] === '#') {
-                    this.add.rectangle(col * 40, row * 40, 40, 40, 0x0000ff).setOrigin(0);
+                    this.add.rectangle(col * 80, row * 80, 80, 80, 0x0000ff).setOrigin(0);
                 }
             }
         }
 
         // Crear el jugador
-        player = this.add.rectangle(800, 600, 20, 20, 0xff0000);
+        player = this.add.rectangle(800, 600, 40, 40, 0xff0000);
         this.physics.add.existing(player);
         player.body.setBounce(0); // El jugador no rebota
         player.body.setCollideWorldBounds(true); // El jugador colisiona con los límites del mundo
@@ -80,10 +80,10 @@ function update() {
     }
 
     // Verificar colisiones con las paredes
-    const tileX = Math.floor(player.x / 40);
-    const tileY = Math.floor(player.y / 40);
+    const tileX = Math.floor(player.x / 80);
+    const tileY = Math.floor(player.y / 80);
     if (maze[tileY][tileX] === '#') {
-        player.x = Math.floor(player.x / 40) * 40;
-        player.y = Math.floor(player.y / 40) * 40;
+        player.x = Math.floor(player.x / 80) * 80;
+        player.y = Math.floor(player.y / 80) * 80;
     }
 }
