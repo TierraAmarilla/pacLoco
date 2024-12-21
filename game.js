@@ -1,3 +1,8 @@
+const log = document.getElementById('log');
+const mazeDisplay = document.getElementById('mazeDisplay');
+const mazeEditor = document.getElementById('mazeEditor');
+const saveButton = document.getElementById('saveButton');
+
 const config = {
     type: Phaser.AUTO,
     width: 800,
@@ -21,8 +26,6 @@ const game = new Phaser.Game(config);
 
 let player;
 let maze = [];
-let mazeEditor = document.getElementById('mazeEditor');
-let saveButton = document.getElementById('saveButton');
 
 function preload() {
     this.load.text('maze', 'laberinto.txt');
@@ -31,11 +34,13 @@ function preload() {
 function create() {
     const mazeText = this.cache.text.get('maze');
     if (mazeText) {
+        log.innerHTML += 'Maze data:<br>' + mazeText.replace(/\n/g, '<br>') + '<br>'; // Depuración
         mazeEditor.value = mazeText;
         const lines = mazeText.split('\n');
         lines.forEach(line => {
             maze.push(line.split(''));
         });
+        log.innerHTML += 'Maze array:<br>' + JSON.stringify(maze) + '<br>'; // Depuración
 
         // Dibujar el laberinto
         for (let row = 0; row < maze.length; row++) {
@@ -55,7 +60,7 @@ function create() {
         // Configurar las teclas de movimiento
         this.cursors = this.input.keyboard.createCursorKeys();
     } else {
-        console.error('Error loading maze data.');
+        log.innerHTML += 'Error loading maze data.<br>';
     }
 }
 
