@@ -55,9 +55,6 @@ function create() {
         player.body.setBounce(0); // El jugador no rebota
         player.body.setCollideWorldBounds(true); // El jugador colisiona con los límites del mundo
 
-        // Añadir velocidad inicial al jugador
-        player.body.setVelocity(100, 100);
-
         // Configurar las teclas de movimiento
         this.cursors = this.input.keyboard.createCursorKeys();
     } else {
