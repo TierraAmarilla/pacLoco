@@ -82,7 +82,7 @@ function update() {
     // Verificar colisiones con las paredes
     const tileX = Math.floor(player.x / 80);
     const tileY = Math.floor(player.y / 80);
-    if (maze[tileY][tileX] === '#') {
+    if (tileX >= 0 && tileX < maze[0].length && tileY >= 0 && tileY < maze.length && maze[tileY][tileX] === '#') {
         player.x = Math.floor(player.x / 80) * 80;
         player.y = Math.floor(player.y / 80) * 80;
     }
