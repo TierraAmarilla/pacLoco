@@ -27,14 +27,11 @@ body {
     align-items: center;
 }
 
-#mazeEditor {
-    width: 400px;
-    height: 500px;
+#mazeEditorCanvas {
+    width: 800px;
+    height: 600px;
     background-color: #fff;
-    color: #000;
     border: 1px solid #000;
-    padding: 10px;
-    font-family: Arial, sans-serif;
     margin-bottom: 10px;
 }
 
@@ -44,10 +41,17 @@ body {
     color: #fff;
     border: none;
     cursor: pointer;
+    margin-bottom: 10px;
 }
 
 #saveButton:hover {
     background-color: #0056b3;
+}
+
+#mazeName {
+    padding: 10px;
+    width: 200px;
+    margin-bottom: 10px;
 }
 
 #log {
