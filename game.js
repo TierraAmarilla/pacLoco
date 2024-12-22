@@ -1,7 +1,8 @@
 const log = document.getElementById('log');
-const mazeDisplay = document.getElementById('mazeDisplay');
-const mazeEditor = document.getElementById('mazeEditor');
+const mazeEditorCanvas = document.getElementById('mazeEditorCanvas');
 const saveButton = document.getElementById('saveButton');
+const mazeNameInput = document.getElementById('mazeName');
+const ctx = mazeEditorCanvas.getContext('2d');
 
 const config = {
     type: Phaser.AUTO,
@@ -26,6 +27,7 @@ const game = new Phaser.Game(config);
 
 let player;
 let maze = [];
+let editorMaze = [];
 
 function preload() {
     this.load.text('maze', 'laberinto.txt');
@@ -35,7 +37,6 @@ function create() {
     const mazeText = this.cache.text.get('maze');
     if (mazeText) {
         log.innerHTML += 'Maze data:<br>' + mazeText.replace(/\n/g, '<br>') + '<br>'; // Depuración
-        mazeEditor.value = mazeText;
         const lines = mazeText.split('\n');
         lines.forEach(line => {
             maze.push(line.split(''));
@@ -62,6 +63,9 @@ function create() {
     } else {
         log.innerHTML += 'Error loading maze data.<br>';
     }
+
+    // Inicializar el editor de laberinto
+    initializeEditor();
 }
 
 function update() {
@@ -87,27 +91,85 @@ function update() {
     }
 }
 
-saveButton.addEventListener('click', () => {
-    const newMazeText = mazeEditor.value;
-    const lines = newMazeText.split('\n');
-    maze = [];
-    lines.forEach(line => {
-        maze.push(line.split(''));
-    });
+function initializeEditor() {
+    // Inicializar el canvas del editor
+    ctx.clearRect(0, 0, mazeEditorCanvas.width, mazeEditorCanvas.height);
+    ctx.fillStyle = '#0000ff';
 
-    // Limpiar el canvas
-    game.scene.scenes[0].children.list.forEach(child => {
-        if (child.type === 'Rectangle') {
-            child.destroy();
-        }
-    });
-
-    // Dibujar el nuevo laberinto
+    // Dibujar el laberinto en el editor
     for (let row = 0; row < maze.length; row++) {
         for (let col = 0; col < maze[row].length; col++) {
             if (maze[row][col] === '#') {
-                game.scene.scenes[0].add.rectangle(col * 40, row * 40, 40, 40, 0x0000ff).setOrigin(0);
+                ctx.fillRect(col * 40, row * 40, 40, 40);
             }
         }
+    }
+
+    // Inicializar la matriz del editor
+    editorMaze = maze.map(row => row.slice());
+
+    // Añadir eventos de dibujo
+    mazeEditorCanvas.addEventListener('mousedown', startDrawing);
+    mazeEditorCanvas.addEventListener('mousemove', draw);
+    mazeEditorCanvas.addEventListener('mouseup', stopDrawing);
+    mazeEditorCanvas.addEventListener('mouseout', stopDrawing);
+}
+
+let isDrawing = false;
+
+function startDrawing(event) {
+    isDrawing = true;
+    draw(event);
+}
+
+function draw(event) {
+    if (!isDrawing) return;
+
+    const rect = mazeEditorCanvas.getBoundingClientRect();
+    const x = Math.floor((event.clientX - rect.left) / 40);
+    const y = Math.floor((event.clientY - rect.top) / 40);
+
+    if (x >= 0 && x < editorMaze[0].length && y >= 0 && y < editorMaze.length) {
+        if (editorMaze[y][x] === '#') {
+            editorMaze[y][x] = '.';
+            ctx.clearRect(x * 40, y * 40, 40, 40);
+        } else {
+            editorMaze[y][x] = '#';
+            ctx.fillRect(x * 40, y * 40, 40, 40);
+        }
+    }
+}
+
+function stopDrawing() {
+    isDrawing = false;
+}
+
+saveButton.addEventListener('click', () => {
+    const newMazeText = editorMaze.map(row => row.join('')).join('\n');
+    const mazeName = mazeNameInput.value;
+
+    if (mazeName) {
+        // Guardar el laberinto en el servidor (aquí puedes implementar la lógica de guardado)
+        console.log('Guardando laberinto con nombre:', mazeName);
+        console.log('Contenido del laberinto:', newMazeText);
+
+        // Limpiar el canvas del juego
+        game.scene.scenes[0].children.list.forEach(child => {
+            if (child.type === 'Rectangle') {
+                child.destroy();
+            }
+        });
+
+        // Dibujar el nuevo laberinto en el juego
+        maze = editorMaze.map(row => row.slice());
+        for (let row = 0; row < maze.length; row++) {
+            for (let col = 0; col < maze[row].length; col++) {
+                if (maze[row][col] === '#') {
+                    game.scene.scenes[0].add.rectangle(col * 40, row * 40, 40, 40, 0x0000ff).setOrigin(0);
+                }
+            }
+        }
+    } else {
+        alert('Por favor, ingresa un nombre para el laberinto.');
     }
 });
