@@ -6,18 +6,23 @@ class Enemy {
         this.speed = 0;
         this.health = 0;
         this.targetX = game.width;
+        this.targetY = 0;
         this.type = type;
+        this.initialTargetX = 0;
+        this.initialTargetY = 0;
 
         switch (this.type) {
             case 'A':
                 this.speed = game.enemySpeedMax;
                 this.health = 5;
-                this.targetY = this.findFarthestPath();
+                this.targetY = this.findClosestTowerPath();
                 break;
             case 'B':
                 this.speed = getRandomInt(2, 4);
                 this.health = 15;
                 this.targetY = this.findFarthestPath();
+                this.initialTargetX = this.targetX;
+                this.initialTargetY = this.targetY;
                 break;
             case 'C':
                 this.speed = getRandomInt(2, 4);
@@ -28,7 +33,7 @@ class Enemy {
                 this.speed = 1;
                 this.health = 100;
                 this.targetY = this.findFarthestPath();
-                const maxHealthTower = game.towers.reduce((max, tower) => (max.health > tower.health ? max : tower));
+                const maxHealthTower = game.towers.reduce((max, tower) => (max.health > tower.health ? max : tower), { health: 0 });
                 this.targetX = maxHealthTower.x;
                 this.targetY = maxHealthTower.y;
                 break;
@@ -56,6 +61,19 @@ class Enemy {
         return farthestY;
     }
 
+    findClosestTowerPath() {
+        let minDistance = Infinity;
+        let closestY = 0;
+        game.towers.forEach(tower => {
+            const distance = Math.hypot(this.x - tower.x, this.y - tower.y);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestY = tower.y;
+            }
+        });
+        return closestY;
+    }
+
     update() {
         const dx = this.targetX - this.x;
         const dy = this.targetY - this.y;
@@ -77,6 +95,12 @@ class Enemy {
                 game.life = 0; // Fijar vida a 0
                 game.gameOver = true; // Fin del juego
             }
+        }
+
+        // Cambiar de dirección cada 30% de las coordenadas x para la clase B
+        if (this.type === 'B' && this.x % (game.width * 0.3) === 0) {
+            this.targetX = this.initialTargetX;
+            this.targetY = this.initialTargetY;
         }
     }
 
