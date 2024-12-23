@@ -4,31 +4,38 @@ class Enemy {
         this.y = y;
         this.size = getEnemySizeByPosition(y); // Tamaño proporcional a la coordenada Y
         this.speed = 0;
-        this.health = game.enemyHealth; // Salud del enemigo
+        this.health = 0;
         this.targetX = game.width;
         this.type = type;
 
         switch (this.type) {
             case 'A':
-                this.speed = getRandomInt(3, 5);
-                this.targetY = game.towers.reduce((max, tower) => (max.health > tower.health ? max : tower)).y;
+                this.speed = game.enemySpeedMax;
+                this.health = 5;
+                this.targetY = this.findFarthestPath();
                 break;
             case 'B':
                 this.speed = getRandomInt(2, 4);
+                this.health = 15;
                 this.targetY = this.findFarthestPath();
                 break;
             case 'C':
                 this.speed = getRandomInt(2, 4);
-                this.targetY = this.sinusoidalPath();
+                this.health = 25;
+                this.targetY = this.findFarthestPath();
                 break;
             case 'D':
-                this.speed = getRandomInt(1, 2);
+                this.speed = 1;
                 this.health = 100;
-                this.targetY = Math.random() * game.height;
+                this.targetY = this.findFarthestPath();
+                const maxHealthTower = game.towers.reduce((max, tower) => (max.health > tower.health ? max : tower));
+                this.targetX = maxHealthTower.x;
+                this.targetY = maxHealthTower.y;
                 break;
             case 'E':
-                this.speed = getRandomInt(2, 4);
-                this.targetY = this.customPath();
+                this.speed = getRandomInt(1, 5);
+                this.health = getRandomInt(5, 100);
+                this.targetY = Math.random() * game.height;
                 break;
             default:
                 this.speed = getRandomInt(2, 4);
@@ -47,15 +54,6 @@ class Enemy {
             }
         });
         return farthestY;
-    }
-
-    sinusoidalPath() {
-        return (game.height / 2) + (game.height / 4) * Math.sin((this.x / game.width) * (2 * Math.PI));
-    }
-
-    customPath() {
-        // Implementa tu lógica personalizada aquí
-        return Math.random() * game.height;
     }
 
     update() {
