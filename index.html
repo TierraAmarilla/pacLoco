@@ -3,20 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laberinto con Phaser</title>
+    <title>Tower Defense</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div id="gameContainer"></div>
-        <div id="editorContainer">
-            <canvas id="mazeEditorCanvas" width="800" height="600"></canvas>
-            <button id="saveButton">Guardar Laberinto</button>
-            <input type="text" id="mazeName" placeholder="Nombre del laberinto">
+    <h1>Juego de Tower Defense</h1>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="controls">
+            <h2>Parámetros del Juego</h2>
+            <label for="enemySpeedMin">Velocidad mínima de los enemigos:</label>
+            <input type="number" id="enemySpeedMin" value="1" min="1" max="10" readonly>
+            <label for="enemySpeedMax">Velocidad máxima de los enemigos:</label>
+            <input type="number" id="enemySpeedMax" value="5" min="1" max="10">
+            <label for="enemiesPerWave">Cantidad de enemigos por racha:</label>
+            <input type="number" id="enemiesPerWave" value="5" min="1" max="10">
+            <label for="enemyInterval">Retardo nuevo enemigo:</label>
+            <input type="number" id="enemyInterval" value="100" min="50" max="5000">
+            <label for="waveInterval">Retardo entre rachas:</label>
+            <input type="number" id="waveInterval" value="1000" min="1000" max="10000">
+            <label for="enemyHealth">Vida enemigo:</label>
+            <input type="number" id="enemyHealth" value="10" min="1" max="100">
+            <label for="towerHealth">Vida torre:</label>
+            <input type="number" id="towerHealth" value="50" min="10" max="200">
+            <label for="maxTowers">Número máximo de torres:</label>
+            <input type="number" id="maxTowers" value="5" min="1" max="20">
         </div>
-        <div id="log"></div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
-    <script src="game.js"></script>
+    <div id="status">
+        <h2>Estado del Juego</h2>
+        <p>Enemigos neutralizados: <span id="enemiesNeutralized">0</span></p>
+    </div>
+    <script src="utils.js"></script>
+    <script src="tower.js"></script>
+    <script src="enemy.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
