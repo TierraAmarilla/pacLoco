@@ -2,7 +2,7 @@ class Tower {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.size = getSizeByPosition(y, 60, 120);
+        this.size = getSizeByPosition(y, 80, 200); // Ajustar el tamaño de las torres para que las diferencias sean más notables
         this.damage = 1;
         this.health = game.towerHealth; // Salud de la torre
     }
