@@ -10,6 +10,7 @@ class Enemy {
         this.type = type;
         this.initialTargetX = 0;
         this.initialTargetY = 0;
+        this.reachedTarget = false;
 
         switch (this.type) {
             case 'A':
@@ -97,8 +98,18 @@ class Enemy {
             }
         }
 
+        // Verificar si el enemigo ha llegado a la torre
+        if (this.type === 'A' || this.type === 'D') {
+            game.towers.forEach(tower => {
+                const towerDistance = Math.hypot(this.x - tower.x, this.y - tower.y);
+                if (towerDistance < tower.size / 2 + this.size / 2) {
+                    this.reachedTarget = true;
+                }
+            });
+        }
+
         // Cambiar de dirección cada 30% de las coordenadas x para la clase B
-        if (this.type === 'B' && this.x % (game.width * 0.3) === 0) {
+        if (this.type === 'B' && this.x % (game.width * 0.3) === 0 && !this.reachedTarget) {
             this.targetX = this.initialTargetX;
             this.targetY = this.initialTargetY;
         }
