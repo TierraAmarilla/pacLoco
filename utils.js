@@ -8,3 +8,11 @@ function getSizeByPosition(y, minSize, maxSize) {
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+// Función para calcular el tamaño de los enemigos proporcional a la coordenada Y
+function getEnemySizeByPosition(y) {
+    const minSize = 20;
+    const maxSize = 100;
+    const scale = (y / game.height);
+    return Math.floor(minSize + (maxSize - minSize) * scale);
+}
