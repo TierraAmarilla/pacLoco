@@ -8,22 +8,19 @@ class Enemy {
         this.targetX = game.width;
         this.targetY = 0;
         this.type = type;
-        this.initialTargetX = 0;
-        this.initialTargetY = 0;
-        this.reachedTarget = false;
 
         switch (this.type) {
             case 'A':
                 this.speed = game.enemySpeedMax;
                 this.health = 5;
-                this.targetY = this.findClosestTowerPath();
+                const closestTower = this.findClosestTower();
+                this.targetX = closestTower.x;
+                this.targetY = closestTower.y;
                 break;
             case 'B':
                 this.speed = getRandomInt(2, 4);
                 this.health = 15;
                 this.targetY = this.findFarthestPath();
-                this.initialTargetX = this.targetX;
-                this.initialTargetY = this.targetY;
                 break;
             case 'C':
                 this.speed = getRandomInt(2, 4);
@@ -33,8 +30,7 @@ class Enemy {
             case 'D':
                 this.speed = 1;
                 this.health = 100;
-                this.targetY = this.findFarthestPath();
-                const maxHealthTower = game.towers.reduce((max, tower) => (max.health > tower.health ? max : tower), { health: 0 });
+                const maxHealthTower = this.findMaxHealthTower();
                 this.targetX = maxHealthTower.x;
                 this.targetY = maxHealthTower.y;
                 break;
@@ -62,17 +58,21 @@ class Enemy {
         return farthestY;
     }
 
-    findClosestTowerPath() {
+    findClosestTower() {
         let minDistance = Infinity;
-        let closestY = 0;
+        let closestTower = null;
         game.towers.forEach(tower => {
             const distance = Math.hypot(this.x - tower.x, this.y - tower.y);
             if (distance < minDistance) {
                 minDistance = distance;
-                closestY = tower.y;
+                closestTower = tower;
             }
         });
-        return closestY;
+        return closestTower;
+    }
+
+    findMaxHealthTower() {
+        return game.towers.reduce((max, tower) => (max.health > tower.health ? max : tower), { health: 0 });
     }
 
     update() {
@@ -98,20 +98,9 @@ class Enemy {
             }
         }
 
-        // Verificar si el enemigo ha llegado a la torre
-        if (this.type === 'A' || this.type === 'D') {
-            game.towers.forEach(tower => {
-                const towerDistance = Math.hypot(this.x - tower.x, this.y - tower.y);
-                if (towerDistance < tower.size / 2 + this.size / 2) {
-                    this.reachedTarget = true;
-                }
-            });
-        }
-
         // Cambiar de dirección cada 30% de las coordenadas x para la clase B
-        if (this.type === 'B' && this.x % (game.width * 0.3) === 0 && !this.reachedTarget) {
-            this.targetX = this.initialTargetX;
-            this.targetY = this.initialTargetY;
+        if (this.type === 'B' && this.x % (game.width * 0.3) === 0) {
+            this.targetY = this.findFarthestPath();
         }
     }
 
