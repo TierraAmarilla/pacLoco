@@ -2,7 +2,7 @@ class Enemy {
     constructor(x, y, type) {
         this.x = x;
         this.y = y;
-        this.size = getSizeByPosition(y, 40, 80);
+        this.size = getEnemySizeByPosition(y); // Tamaño proporcional a la coordenada Y
         this.speed = 0;
         this.health = game.enemyHealth; // Salud del enemigo
         this.targetX = game.width;
@@ -64,6 +64,9 @@ class Enemy {
         const distance = Math.hypot(dx, dy);
         this.x += (dx / distance) * this.speed;
         this.y += (dy / distance) * this.speed;
+
+        // Ajustar el tamaño del enemigo durante el trayecto
+        this.size = getEnemySizeByPosition(this.y);
 
         // Verificar si el enemigo ha llegado a la parte derecha
         if (this.x >= game.width) {
